@@ -345,7 +345,6 @@ src="https://www.facebook.com/tr?id=2179965199134955&ev=PageView&noscript=1"
             </div>
         </section>
 
-        <form id="order_form" action="https://salesanythings.github.io/lihtar/lihtar_files/thank_you_page.html" method="post">
             <section class="form-style-1">
                  <input type="hidden" name="form_token" value="4403d92c7036230edf11834a53cd04f783fc672d7a8032fbd466e4dc03b0d334">
 				 <select class="field" name="count" id="">
@@ -380,52 +379,76 @@ src="https://www.facebook.com/tr?id=2179965199134955&ev=PageView&noscript=1"
                 </div>
             </section>
         <input type="hidden" name="phone_e164" value=""><input type="hidden" name="phone_last9" value=""></form>
+
 	<script>
-            document.addEventListener('DOMContentLoaded', function() {
-                document.getElementById('order_form').addEventListener('submit', function(e) {
-                    e.preventDefault(); // Зупиняємо стандартне відправлення форми
-            
-                    // Отримуємо значення полів форми
-                    var name = document.querySelector('input[name="name"]').value.trim();
-                    var phone = document.querySelector('input[name="phone"]').value.trim();
-                    var comment = document.querySelector('select[name="comment"]').value;
-            
-                    // Перевіряємо, чи всі поля заповнені
-                    if (!name || !phone || !comment) {
-                        alert("Будь ласка, заповніть всі поля!");
-                        return;
-                    }
-            
-                    // Формуємо повідомлення
-                    var message = `📦(Світильник) НОВЕ ЗАМОВЛЕННЯ\n\n🧑 Ім'я: ${name}\n📞 Телефон: ${phone}\n🌱 Кількість: ${comment}`;
-            
-                    // Ваш токен та ID чату
-                    var token = '7702858497:AAHkYy0UzzjIuTpeHyEycr_zKHGb2qqu3I0';
-                    var chatId = 326093985;
-            
-                    // Відправка замовлення через Telegram API
-                    fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ chat_id: chatId, text: message, parse_mode: "Markdown" })
-                    })
-                    .then(response => response.json())
-                    .then(data => {
-                        console.log('Успішно відправлено:', data);
-                        if (data.ok) {
-                            // Після успішної відправки, переходимо на сторінку "Дякую"
-                            window.location.href = "./lihtar_files/thank_you_page.html";
-                        } else {
-                            alert('Помилка при відправленні замовлення. Спробуйте ще раз.');
-                        }
-                    })
-                    .catch((error) => {
-                        console.error('Помилка:', error);
-                        alert('Помилка при відправленні замовлення.');
-                    });
-                });
+document.addEventListener("DOMContentLoaded", function () {
+
+    const TOKEN = "7702858497:AAHkYy0UzzjIuTpeHyEycr_zKHGb2qqu3I0";
+    const CHAT_ID = "326093985";
+    const TELEGRAM_URL = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
+
+    const form = document.getElementById("order_form");
+    const btn = document.querySelector(".btn-buy");
+    const loadingGif = document.querySelector(".submit-loader");
+
+    if (!form) return;
+
+    form.addEventListener("submit", function (e) {
+        e.preventDefault();
+
+        // Отримуємо значення форми
+        const name = document.querySelector("input[name='name']").value.trim();
+        const phone = document.querySelector("input[name='phone']").value.trim();
+        const count = document.querySelector("select[name='count']").value.trim();
+
+        // Перевірка
+        if (!name || !phone) {
+            alert("Будь ласка, заповніть всі поля!");
+            return;
+        }
+
+        // Формуємо текст повідомлення
+        const text =
+            `🔥 НОВЕ ЗАМОВЛЕННЯ LIHTAR\n\n` +
+            `👤 Ім'я: ${name}\n` +
+            `📞 Телефон: ${phone}\n` +
+            `📦 Кількість: ${count}`;
+
+        // Показуємо лоадер
+        if (btn) btn.style.display = "none";
+        if (loadingGif) loadingGif.style.display = "block";
+
+        // Надсилаємо у Telegram
+        fetch(TELEGRAM_URL, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                chat_id: CHAT_ID,
+                text: text,
+                parse_mode: "HTML",
+            }),
+        })
+            .then((res) => res.json())
+            .then((data) => {
+                console.log("SUCCESS", data);
+
+                // Переходимо на сторінку подяки
+                window.location.href = "thank_you_page.html";
+            })
+            .catch((err) => {
+                console.error("ERROR", err);
+                alert("Сталася помилка при надсиланні замовлення.");
+            })
+            .finally(() => {
+                if (btn) btn.style.display = "block";
+                if (loadingGif) loadingGif.style.display = "none";
             });
-            </script>
+    });
+});
+</script>
+
         
 
         
