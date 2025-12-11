@@ -388,37 +388,32 @@ document.addEventListener("DOMContentLoaded", function () {
     const TELEGRAM_URL = `https://api.telegram.org/bot${TOKEN}/sendMessage`;
 
     const form = document.getElementById("order_form");
-    const btn = document.querySelector(".btn-buy");
-    const loadingGif = document.querySelector(".submit-loader");
+    const btn = document.getElementById("btn");
+    const loadingGif = document.querySelector(".img-loading");
 
     if (!form) return;
 
     form.addEventListener("submit", function (e) {
         e.preventDefault();
 
-        // Отримуємо значення форми
         const name = document.querySelector("input[name='name']").value.trim();
         const phone = document.querySelector("input[name='phone']").value.trim();
         const count = document.querySelector("select[name='count']").value.trim();
 
-        // Перевірка
         if (!name || !phone) {
             alert("Будь ласка, заповніть всі поля!");
             return;
         }
 
-        // Формуємо текст повідомлення
         const text =
             `🔥 НОВЕ ЗАМОВЛЕННЯ LIHTAR\n\n` +
             `👤 Ім'я: ${name}\n` +
             `📞 Телефон: ${phone}\n` +
             `📦 Кількість: ${count}`;
 
-        // Показуємо лоадер
-        if (btn) btn.style.display = "none";
+        if (btn) btn.querySelector("button").disabled = true;
         if (loadingGif) loadingGif.style.display = "block";
 
-        // Надсилаємо у Telegram
         fetch(TELEGRAM_URL, {
             method: "POST",
             headers: {
@@ -430,24 +425,23 @@ document.addEventListener("DOMContentLoaded", function () {
                 parse_mode: "HTML",
             }),
         })
-            .then((res) => res.json())
-            .then((data) => {
-                console.log("SUCCESS", data);
-
-                // Переходимо на сторінку подяки
-                window.location.href = "thank_you_page.html";
-            })
-            .catch((err) => {
-                console.error("ERROR", err);
-                alert("Сталася помилка при надсиланні замовлення.");
-            })
-            .finally(() => {
-                if (btn) btn.style.display = "block";
-                if (loadingGif) loadingGif.style.display = "none";
-            });
+        .then(res => res.json())
+        .then(data => {
+            console.log("SUCCESS", data);
+            window.location.href = "thank_you_page.html";
+        })
+        .catch(err => {
+            console.error("ERROR", err);
+            alert("Сталася помилка при надсиланні замовлення.");
+        })
+        .finally(() => {
+            if (btn) btn.querySelector("button").disabled = false;
+            if (loadingGif) loadingGif.style.display = "none";
+        });
     });
 });
 </script>
+
 
         
 
